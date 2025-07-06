@@ -1,0 +1,163 @@
+SELECT TOP (1000) [Row_ID]
+      ,[Order_ID]
+      ,[Order_Date]
+      ,[Order_Priority]
+      ,[Order_Quantity]
+      ,[Sales]
+      ,[Discount]
+      ,[Ship_Mode]
+      ,[Profit]
+      ,[Unit_Price]
+      ,[Shipping_Cost]
+      ,[Customer_Name]
+      ,[Province]
+      ,[Region]
+      ,[Customer_Segment]
+      ,[Product_Category]
+      ,[Product_Sub_Category]
+      ,[Product_Name]
+      ,[Product_Container]
+      ,[Product_Base_Margin]
+      ,[Ship_Date]
+  FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+
+  --------Analyses--------
+  1. Which product category had the highest sales?
+
+  SELECT TOP 1 
+    [Product_Category], 
+    SUM([Sales]) AS Total_Sales
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Product_Category]
+ORDER BY Total_Sales DESC;
+
+  2. What are the Top 3 and Bottom 3 regions in terms of sales?
+
+  SELECT TOP 3 
+    [Region], 
+    SUM([Sales]) AS Total_Sales
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Region]
+ORDER BY Total_Sales DESC;
+
+  Question 3: What were the total sales of appliances in Ontario?
+
+  SELECT 
+    SUM([Sales]) AS Total_Appliance_Sales_In_Ontario
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+WHERE [Product_Category] = 'Appliances'
+  AND [Province] = 'Ontario';
+
+  Question 4: Advise the management of KMS on what to do to increase the revenue from the bottom 10 customers
+
+  SELECT TOP 10 
+    [Customer_Name], 
+    SUM([Sales]) AS Total_Sales
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Customer_Name]
+ORDER BY Total_Sales ASC;
+
+Advisory for Management: How to Increase Revenue from These Customers
+
+1. Customer Loyalty Campaigns
+Offer loyalty points, discounts, or referral rewards to encourage repeat purchases.
+
+2. Targeted Promotions
+Analyze their purchase history and send tailored promotions based on their preferred product categories.
+
+3. Upsell & Cross-sell Opportunities
+Suggest relevant accessories or upgrades during purchase (e.g., bundle deals).
+
+4. Personalized Engagement
+Use email or WhatsApp campaigns to re-engage low-activity customers.
+
+Offer limited-time deals exclusive to dormant customers.
+
+5. Review Delivery or Support Experience
+Check if slow delivery, poor support, or return issues discouraged them from returning.
+
+Improve post-purchase service experience.
+
+6. Sales Outreach
+Have the sales team follow up with corporate or retail clients for feedback or bulk order offers.
+
+
+Question 5: KMS incurred the most shipping cost using which shipping method?
+
+SELECT TOP 1 
+    [Ship_Mode], 
+    SUM([Shipping_Cost]) AS Total_Shipping_Cost
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Ship_Mode]
+ORDER BY Total_Shipping_Cost DESC;
+
+Question 6: Who are the most valuable customers, and what products or services do they typically purchase?
+
+SELECT TOP 5 
+    [Customer_Name], 
+    SUM([Sales]) AS Total_Sales
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Customer_Name]
+ORDER BY Total_Sales DESC;
+
+Question 7: Which small business customer had the highest sales?
+
+SELECT TOP 1 
+    [Customer_Name], 
+    SUM([Sales]) AS Total_Sales
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+WHERE [Customer_Segment] = 'Small Business'
+GROUP BY [Customer_Name]
+ORDER BY Total_Sales DESC;
+
+Question 8: Which Corporate Customer placed the most number of orders in 2009–2012?
+
+SELECT TOP 1 
+    [Customer_Name], 
+    COUNT(DISTINCT [Order_ID]) AS Order_Count
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+WHERE [Customer_Segment] = 'Corporate'
+  AND [Order_Date] BETWEEN '2009-01-01' AND '2012-12-31'
+GROUP BY [Customer_Name]
+ORDER BY Order_Count DESC;
+
+Question 9: Which consumer customer was the most profitable one?
+SELECT TOP 1 
+    [Customer_Name], 
+    SUM([Profit]) AS Total_Profit
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+WHERE [Customer_Segment] = 'Consumer'
+GROUP BY [Customer_Name]
+ORDER BY Total_Profit DESC;
+
+10. Which customer returned items, and what segment do they belong to?
+
+SELECT 
+    o.[Customer_Name],
+    o.[Customer_Segment],
+    o.[Order_ID],
+    r.[Order_ID] AS Returned_Order
+FROM  [KMS_DB].[dbo].[KMS Sql Case Study (1)] o
+JOIN [KMS_DB].[dbo].[Order_Status (1)] r
+  ON o.[Order_ID] = r.[Order_ID];
+
+  Question 11:
+If the Delivery Truck is the most economical but the slowest shipping method, 
+and Express Air is the fastest but most expensive, do you think the company 
+appropriately spent shipping costs based on the Order Priority? Explain your answer.
+
+SELECT 
+    [Order_Priority], 
+    [Ship_Mode], 
+    COUNT([Order_ID]) AS Total_Orders,
+    AVG([Shipping_Cost]) AS Avg_Shipping_Cost,
+    SUM([Shipping_Cost]) AS Total_Shipping_Cost
+FROM [KMS_DB].[dbo].[KMS Sql Case Study (1)]
+GROUP BY [Order_Priority], [Ship_Mode]
+ORDER BY [Order_Priority], [Ship_Mode];
+
+Based on the analysis, we found that high-priority orders mostly used Express Air,
+and low-priority orders leaned toward Delivery Truck, confirming that shipping costs 
+were appropriately aligned with order urgency. 
+However, a few low-priority orders still used high-cost shipping,
+which could be optimized further.
